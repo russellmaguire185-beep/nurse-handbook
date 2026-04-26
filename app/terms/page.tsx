@@ -4,8 +4,10 @@ import Header from '@/components/Header'
 export default function TermsPage() {
   return (
     <PageShell>
-      <Header title="Terms of Use" />
-
+      <Header
+          title="Terms of Use"
+          subtitle="How this app should be used"
+        />
       <div className="px-4 pb-24 space-y-4 text-sm text-gray-700">
         <p>
           Nurse Handbook is provided for informational and educational purposes only.

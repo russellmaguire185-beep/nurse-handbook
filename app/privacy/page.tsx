@@ -4,7 +4,10 @@ import Header from '@/components/Header'
 export default function PrivacyPage() {
   return (
     <PageShell>
-      <Header title="Privacy Policy" />
+      <Header
+        title="Privacy Policy"
+        subtitle="How your information is handled"
+      />
 
       <div className="px-4 pb-24 space-y-4 text-sm text-gray-700">
         <p>
