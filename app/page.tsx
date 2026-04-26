@@ -58,7 +58,7 @@ export default function HomePage() {
         title="The Nurses’ Handbook"
         subtitle="Quick tools for real shifts"
       />
-      <p className="px-4 pt-2 text-xs text-gray-500">
+      <p className="px-4 pt-3 pb-1 text-xs text-gray-500">
         Designed for UK clinical practice.
       </p>
       <div className="-mt-5 px-5">
