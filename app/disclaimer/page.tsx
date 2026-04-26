@@ -15,8 +15,9 @@ export default function DisclaimerPage() {
           <h2>Clinical support only</h2>
           <p>
             The Nurses’ Handbook is designed as a quick reference and calculation
-            support tool. It does not replace clinical judgement, local policy,
-            senior advice, prescribing guidance, or professional accountability.
+            support tool for qualified healthcare professionals. It does not
+            replace clinical judgement, local policy, senior advice, prescribing
+            guidance, or professional accountability.
           </p>
         </section>
 
@@ -44,7 +45,19 @@ export default function DisclaimerPage() {
           <h2>Use within your scope</h2>
           <p>
             Use this app only within your training, competence, role, and local
-            governance arrangements.
+            governance arrangements. If you are unsure, escalate to a senior
+            clinician and follow local guidance.
+          </p>
+        </section>
+
+        <section className="nh-card nh-page-card">
+          <p className="nh-section-label">Liability</p>
+          <h2>No guarantee of accuracy</h2>
+          <p>
+            While care has been taken to ensure accuracy, no guarantee is
+            provided regarding completeness or correctness. The creators of this
+            app accept no liability for decisions or actions taken based on its
+            use.
           </p>
         </section>
       </div>
