@@ -13,6 +13,7 @@ const toolContent: Record<
     description: string;
     notes: string[];
   }
+  
 > = {
   "iv-drip-rate-calculator": {
     title: "IV Drip Rate Calculator",
@@ -113,11 +114,26 @@ const toolContent: Record<
       "Ready for future clinical detail",
     ],
   },
+  "cpr": {
+  title: "CPR",
+  subtitle: "Basic life support",
+  description: "Adult basic life support reminder.",
+  notes: [
+    "Quick reference only",
+    "Follow local resuscitation policy",
+    "Call emergency response / 999 where required",
+  ],
+},
 };
 const sepsis6Protocol = [
   {
     title: "Sepsis 6 actions",
-    items: [
+        items: [
+          {
+  label: "Note",
+  value:
+    "Sepsis 6 is a commonly used care bundle. Always follow current NICE guidance and local sepsis policy.",
+},
       { label: "1. Give oxygen", value: "If clinically indicated" },
       { label: "2. Give IV antibiotics", value: "Follow local policy" },
       { label: "3. Take blood cultures", value: "Before antibiotics if possible" },
@@ -169,17 +185,21 @@ const anaphylaxisProtocol = [
 
 const normalVitalSigns = [
   {
-    title: "Adult ranges",
+    title: "Adult ranges (NEWS2 aligned)",
     items: [
+      {
+        label: "Note",
+        value:
+          "Ranges reflect NEWS2 scoring (score 0) rather than full physiological normal ranges.",
+      },
       { label: "Respiratory rate", value: "12–20 /min" },
       { label: "Heart rate", value: "60–100 bpm" },
-      { label: "Systolic BP", value: "90–120 mmHg" },
-      { label: "SpO₂", value: "≥95%" },
-      { label: "Temperature", value: "36.1–37.2 °C" },
+      { label: "Systolic BP", value: "111–219 mmHg" },
+      { label: "SpO₂", value: "≥96%" },
+      { label: "Temperature", value: "36.1–38.0 °C" },
     ],
   },
 ];
-
 const electrolyteRanges = [
   {
     title: "Common electrolytes",
@@ -188,6 +208,8 @@ const electrolyteRanges = [
       { label: "Potassium (K⁺)", value: "3.5–5.0 mmol/L" },
       { label: "Calcium (Ca²⁺)", value: "2.2–2.6 mmol/L" },
       { label: "Magnesium (Mg²⁺)", value: "0.7–1.0 mmol/L" },
+      { label: "Bicarbonate", value: "23–29 mmol/L" },
+      { label: "Phosphate (PO₄)", value: "3.4–4.5 mg/dL" },
     ],
   },
 ];
@@ -219,6 +241,15 @@ const oxygenDevices = [
 ];
 
 function formatSlugTitle(slug: string) {
+  const titleOverrides: Record<string, string> = {
+    "tablet-capsule-calculator": "Tablet & Capsule Calculator",
+    cpr: "CPR",
+  };
+
+  if (titleOverrides[slug]) {
+    return titleOverrides[slug];
+  }
+
   return slug
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -551,31 +582,50 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
           </section>
         </>
       ) : null}
+      {result ? (
+  <>
+    ...existing result sections...
+    
+    <section className="nh-card nh-page-card">
+      <p className="nh-section-label">Reference</p>
+      <a
+        href={referenceLinks["iv-drip-rate-calculator"]}
+        className="text-sm font-semibold text-blue-600 underline"
+      >
+        View clinical reference source
+      </a>
+    </section>
+  </>
+) : null}
     </div>
   );
 }
-
 function LiquidDoseCalculator() {
-  const [requiredDoseMg, setRequiredDoseMg] = useState("");
-  const [stockStrengthMg, setStockStrengthMg] = useState("");
+  const [requiredDose, setRequiredDose] = useState("");
+  const [requiredUnit, setRequiredUnit] = useState<"mg" | "mcg">("mg");
+  const [stockStrength, setStockStrength] = useState("");
+  const [stockUnit, setStockUnit] = useState<"mg" | "mcg">("mg");
   const [stockVolumeMl, setStockVolumeMl] = useState("");
   const [error, setError] = useState("");
-  const [result, setResult] = useState<{
-    volumeToGiveMl: number;
-  } | null>(null);
-    const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
+  const [result, setResult] = useState<{ volumeToGiveMl: number } | null>(null);
+  const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
+
+  function convertToMicrograms(value: number, unit: "mg" | "mcg") {
+    return unit === "mg" ? value * 1000 : value;
+  }
+
   function handleCalculate() {
-    const requiredDose = Number(requiredDoseMg);
-    const stockStrength = Number(stockStrengthMg);
+    const dose = Number(requiredDose);
+    const strength = Number(stockStrength);
     const stockVolume = Number(stockVolumeMl);
 
-    if (!requiredDose || requiredDose <= 0) {
+    if (!dose || dose <= 0) {
       setError("Enter a valid required dose.");
       setResult(null);
       return;
     }
 
-    if (!stockStrength || stockStrength <= 0) {
+    if (!strength || strength <= 0) {
       setError("Enter a valid stock strength.");
       setResult(null);
       return;
@@ -587,20 +637,25 @@ function LiquidDoseCalculator() {
       return;
     }
 
-    const volumeToGiveMl = (requiredDose / stockStrength) * stockVolume;
+    const doseMcg = convertToMicrograms(dose, requiredUnit);
+    const strengthMcg = convertToMicrograms(strength, stockUnit);
+
+    const volumeToGiveMl = (doseMcg / strengthMcg) * stockVolume;
 
     setResult({ volumeToGiveMl });
     setError("");
   }
 
-    function handleClear() {
-  setRequiredDoseMg("");
-  setStockStrengthMg("");
-  setStockVolumeMl("");
-  setError("");
-  setResult(null);
-  setAcceptedDisclaimer(false);
-}
+  function handleClear() {
+    setRequiredDose("");
+    setRequiredUnit("mg");
+    setStockStrength("");
+    setStockUnit("mg");
+    setStockVolumeMl("");
+    setError("");
+    setResult(null);
+    setAcceptedDisclaimer(false);
+  }
 
   return (
     <div className="nh-content space-y-4 pt-4">
@@ -608,8 +663,8 @@ function LiquidDoseCalculator() {
         <p className="nh-section-label">Calculator</p>
         <h2>Enter medication details</h2>
         <p>
-          Enter the required dose, the available stock strength, and the stock
-          volume to calculate the volume to administer.
+          Enter the required dose, available stock strength, and stock volume to
+          calculate the volume to administer.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -618,19 +673,33 @@ function LiquidDoseCalculator() {
               htmlFor="required-dose"
               className="mb-2 block text-sm font-semibold text-[var(--text-strong)]"
             >
-              Required dose (mg)
+              Required dose
             </label>
-            <input
-              id="required-dose"
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="any"
-              value={requiredDoseMg}
-              onChange={(e) => setRequiredDoseMg(e.target.value)}
-              placeholder="e.g. 500"
-              className="w-full rounded-[14px] border border-[#d8e1ec] bg-white px-4 py-3 text-[15px] text-[var(--text-strong)] outline-none focus:border-[#58a6ff]"
-            />
+
+            <div className="grid grid-cols-[1fr_105px] gap-3">
+              <input
+                id="required-dose"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="any"
+                value={requiredDose}
+                onChange={(e) => setRequiredDose(e.target.value)}
+                placeholder="e.g. 500"
+                className="w-full rounded-[14px] border border-[#d8e1ec] bg-white px-4 py-3 text-[15px] text-[var(--text-strong)] outline-none focus:border-[#58a6ff]"
+              />
+
+              <select
+                value={requiredUnit}
+                onChange={(e) =>
+                  setRequiredUnit(e.target.value as "mg" | "mcg")
+                }
+                className="w-full rounded-[14px] border border-[#d8e1ec] bg-white px-3 py-3 text-[15px] text-[var(--text-strong)] outline-none focus:border-[#58a6ff]"
+              >
+                <option value="mg">mg</option>
+                <option value="mcg">mcg</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -638,19 +707,31 @@ function LiquidDoseCalculator() {
               htmlFor="stock-strength"
               className="mb-2 block text-sm font-semibold text-[var(--text-strong)]"
             >
-              Stock strength (mg)
+              Stock strength
             </label>
-            <input
-              id="stock-strength"
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="any"
-              value={stockStrengthMg}
-              onChange={(e) => setStockStrengthMg(e.target.value)}
-              placeholder="e.g. 250"
-              className="w-full rounded-[14px] border border-[#d8e1ec] bg-white px-4 py-3 text-[15px] text-[var(--text-strong)] outline-none focus:border-[#58a6ff]"
-            />
+
+            <div className="grid grid-cols-[1fr_105px] gap-3">
+              <input
+                id="stock-strength"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="any"
+                value={stockStrength}
+                onChange={(e) => setStockStrength(e.target.value)}
+                placeholder="e.g. 250"
+                className="w-full rounded-[14px] border border-[#d8e1ec] bg-white px-4 py-3 text-[15px] text-[var(--text-strong)] outline-none focus:border-[#58a6ff]"
+              />
+
+              <select
+                value={stockUnit}
+                onChange={(e) => setStockUnit(e.target.value as "mg" | "mcg")}
+                className="w-full rounded-[14px] border border-[#d8e1ec] bg-white px-3 py-3 text-[15px] text-[var(--text-strong)] outline-none focus:border-[#58a6ff]"
+              >
+                <option value="mg">mg</option>
+                <option value="mcg">mcg</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -739,6 +820,11 @@ function LiquidDoseCalculator() {
                   {formatNumber(result.volumeToGiveMl)} mL
                 </p>
               </div>
+
+              <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4 text-sm text-[var(--text-muted)]">
+                Based on {requiredDose} {requiredUnit} required dose and{" "}
+                {stockStrength} {stockUnit} in {stockVolumeMl} mL stock volume.
+              </div>
             </div>
           </section>
 
@@ -752,8 +838,7 @@ function LiquidDoseCalculator() {
                   Formula
                 </p>
                 <p className="mt-1">
-                  Volume to give = (required dose ÷ stock strength) × stock
-                  volume
+                  Volume to give = required dose ÷ stock strength × stock volume
                 </p>
               </div>
 
@@ -762,7 +847,12 @@ function LiquidDoseCalculator() {
                   Worked calculation
                 </p>
                 <p className="mt-1">
-                  = ({requiredDoseMg} ÷ {stockStrengthMg}) × {stockVolumeMl}
+                  Units are converted internally so mg and mcg can be compared
+                  safely.
+                </p>
+                <p className="mt-1">
+                  = ({requiredDose} {requiredUnit} ÷ {stockStrength} {stockUnit})
+                  × {stockVolumeMl} mL
                 </p>
                 <p className="mt-1">
                   = {formatNumber(result.volumeToGiveMl)} mL
@@ -770,12 +860,12 @@ function LiquidDoseCalculator() {
               </div>
             </div>
           </section>
+          
         </>
       ) : null}
     </div>
   );
 }
-
 function News2Calculator() {
     const [respRate, setRespRate] = useState("");
   const [spo2, setSpo2] = useState("");
@@ -1120,7 +1210,7 @@ function News2Calculator() {
             <h2>Breakdown</h2>
 
             <div className="mt-4 grid gap-3">
-              <div className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
+              <div className="flex items-start justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
                 <span className="text-sm font-medium text-[var(--text-muted)]">
                   Respiratory rate
                 </span>
@@ -1129,7 +1219,7 @@ function News2Calculator() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
+              <div className="flex items-start justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
                 <span className="text-sm font-medium text-[var(--text-muted)]">
                   SpO₂
                 </span>
@@ -1138,7 +1228,7 @@ function News2Calculator() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
+              <div className="flex items-start justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
                 <span className="text-sm font-medium text-[var(--text-muted)]">
                   Supplemental oxygen
                 </span>
@@ -1147,7 +1237,7 @@ function News2Calculator() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
+              <div className="flex items-start justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
                 <span className="text-sm font-medium text-[var(--text-muted)]">
                   Systolic BP
                 </span>
@@ -1156,7 +1246,7 @@ function News2Calculator() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
+              <div className="flex items-start justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
                 <span className="text-sm font-medium text-[var(--text-muted)]">
                   Pulse
                 </span>
@@ -1165,7 +1255,7 @@ function News2Calculator() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
+              <div className="flex items-start justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
                 <span className="text-sm font-medium text-[var(--text-muted)]">
                   Consciousness
                 </span>
@@ -1174,7 +1264,7 @@ function News2Calculator() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
+              <div className="flex items-start justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3">
                 <span className="text-sm font-medium text-[var(--text-muted)]">
                   Temperature
                 </span>
@@ -1222,6 +1312,16 @@ function News2Calculator() {
                 saturation target range.
               </div>
             </div>
+                    </section>
+
+          <section className="nh-card nh-page-card">
+            <p className="nh-section-label">Reference</p>
+            <a
+              href={referenceLinks["news2-score"]}
+              className="text-sm font-semibold text-blue-600 underline"
+            >
+              View clinical reference source
+            </a>
           </section>
         </>
       ) : null}
@@ -1230,14 +1330,14 @@ function News2Calculator() {
 }
 function MedicationUnitConverter() {
   const [value, setValue] = useState("");
-    const [unit, setUnit] = useState<"g" | "mg" | "micrograms">("mg");
-    const [error, setError] = useState("");
-    const [result, setResult] = useState<{
-      grams: number;
-      milligrams: number;
-      micrograms: number;
-    } | null>(null);
-    const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
+  const [unit, setUnit] = useState<"g" | "mg" | "micrograms">("mg");
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<{
+    grams: number;
+    milligrams: number;
+    micrograms: number;
+  } | null>(null);
+  const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
 
   function handleCalculate() {
     const amount = Number(value);
@@ -1262,13 +1362,14 @@ function MedicationUnitConverter() {
     setError("");
   }
 
-    function handleClear() {
+  function handleClear() {
     setValue("");
     setUnit("mg");
     setError("");
     setResult(null);
     setAcceptedDisclaimer(false);
   }
+
   return (
     <div className="nh-content space-y-4 pt-4">
       <section className="nh-card nh-page-card">
@@ -1306,13 +1407,13 @@ function MedicationUnitConverter() {
             >
               <option value="g">grams (g)</option>
               <option value="mg">milligrams (mg)</option>
-              <option value="micrograms">micrograms</option>
+              <option value="micrograms">micrograms (mcg)</option>
             </select>
           </div>
         </div>
       </section>
 
-              <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
+      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
         <p className="nh-section-label">Disclaimer</p>
         <p className="mt-0">
           Clinical support only. Always verify prescription units, formulation,
@@ -1332,7 +1433,7 @@ function MedicationUnitConverter() {
 
       <section className="nh-card nh-page-card">
         <div className="flex flex-col gap-3 sm:flex-row">
-         <button
+          <button
             type="button"
             onClick={handleCalculate}
             disabled={!acceptedDisclaimer}
@@ -1362,44 +1463,56 @@ function MedicationUnitConverter() {
       </section>
 
       {result ? (
-        <section className="nh-card nh-page-card">
-          <p className="nh-section-label">Converted values</p>
-          <h2>Results</h2>
+        <>
+          <section className="nh-card nh-page-card">
+            <p className="nh-section-label">Converted values</p>
+            <h2>Results</h2>
 
-          <div className="mt-4 grid gap-3">
-            <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
-              <p className="text-sm font-semibold text-[var(--text-muted)]">
-                Grams
-              </p>
-              <p className="mt-1 text-[22px] font-extrabold text-[var(--text-strong)]">
-                {formatNumber(result.grams)} g
-              </p>
-            </div>
+            <div className="mt-4 grid gap-3">
+              <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
+                <p className="text-sm font-semibold text-[var(--text-muted)]">
+                  Grams
+                </p>
+                <p className="mt-1 text-[22px] font-extrabold text-[var(--text-strong)]">
+                  {formatNumber(result.grams)} g
+                </p>
+              </div>
 
-            <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
-              <p className="text-sm font-semibold text-[var(--text-muted)]">
-                Milligrams
-              </p>
-              <p className="mt-1 text-[22px] font-extrabold text-[var(--text-strong)]">
-                {formatNumber(result.milligrams)} mg
-              </p>
-            </div>
+              <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
+                <p className="text-sm font-semibold text-[var(--text-muted)]">
+                  Milligrams
+                </p>
+                <p className="mt-1 text-[22px] font-extrabold text-[var(--text-strong)]">
+                  {formatNumber(result.milligrams)} mg
+                </p>
+              </div>
 
-            <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
-              <p className="text-sm font-semibold text-[var(--text-muted)]">
-                Micrograms
-              </p>
-              <p className="mt-1 text-[22px] font-extrabold text-[var(--text-strong)]">
-                {formatNumber(result.micrograms)} micrograms
-              </p>
+              <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
+                <p className="text-sm font-semibold text-[var(--text-muted)]">
+                  Micrograms
+                </p>
+                <p className="mt-1 text-[22px] font-extrabold text-[var(--text-strong)]">
+                  {formatNumber(result.micrograms)} micrograms
+                </p>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+          <section className="nh-card nh-page-card">
+            <p className="nh-section-label">Reference</p>
+            <a
+              href={referenceLinks["medication-unit-converter"]}
+              className="text-sm font-semibold text-blue-600 underline"
+            >
+              View clinical reference source
+            </a>
+          </section>
+        </>
       ) : null}
     </div>
   );
 }
-function TabletCapsuleCalculator() {
+ function TabletCapsuleCalculator() {
   const [requiredDoseMg, setRequiredDoseMg] = useState("");
   const [strengthMg, setStrengthMg] = useState("");
   const [error, setError] = useState("");
@@ -1426,7 +1539,7 @@ function TabletCapsuleCalculator() {
     setError("");
   }
 
-    function handleClear() {
+  function handleClear() {
     setRequiredDoseMg("");
     setStrengthMg("");
     setError("");
@@ -1479,7 +1592,7 @@ function TabletCapsuleCalculator() {
         </div>
       </section>
 
-        <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
+      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
         <p className="nh-section-label">Disclaimer</p>
         <p className="mt-0">
           Clinical support only. Always verify prescription, formulation,
@@ -1495,22 +1608,22 @@ function TabletCapsuleCalculator() {
           />
           <span>I understand and accept this clinical safety disclaimer.</span>
         </label>
-</section>
+      </section>
 
       <section className="nh-card nh-page-card">
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
-  type="button"
-  onClick={handleCalculate}
-  disabled={!acceptedDisclaimer}
-  className={`flex-1 rounded-[16px] px-4 py-3 text-[15px] font-bold shadow-[var(--shadow-soft)] ${
-    acceptedDisclaimer
-      ? "bg-[linear-gradient(180deg,#58a6ff_0%,#2d7df0_100%)] text-white"
-      : "cursor-not-allowed bg-[#d8e1ec] text-[#70839f]"
-  }`}
->
-  Calculate tablets/capsules
-</button>
+            type="button"
+            onClick={handleCalculate}
+            disabled={!acceptedDisclaimer}
+            className={`flex-1 rounded-[16px] px-4 py-3 text-[15px] font-bold shadow-[var(--shadow-soft)] ${
+              acceptedDisclaimer
+                ? "bg-[linear-gradient(180deg,#58a6ff_0%,#2d7df0_100%)] text-white"
+                : "cursor-not-allowed bg-[#d8e1ec] text-[#70839f]"
+            }`}
+          >
+            Calculate tablets/capsules
+          </button>
 
           <button
             type="button"
@@ -1547,12 +1660,26 @@ function TabletCapsuleCalculator() {
           <section className="nh-card nh-page-card">
             <p className="nh-section-label">How this is calculated</p>
             <h2>Calculation method</h2>
-            <p>
-              Tablets/capsules = required dose ÷ strength per tablet/capsule
+
+            <p className="mt-2">
+              Tablets/capsules = desired dose ÷ available strength
             </p>
-            <p>
-              = {requiredDoseMg} ÷ {strengthMg} = {formatNumber(result.units)}
+
+            <p className="mt-2">
+              = {requiredDoseMg} ÷ {strengthMg} ={" "}
+              {formatNumber(result.units)}
             </p>
+          </section>
+
+          {/* ✅ REFERENCE SECTION */}
+          <section className="nh-card nh-page-card">
+            <p className="nh-section-label">Reference</p>
+            <a
+              href={referenceLinks["tablet-capsule-calculator"]}
+              className="text-sm font-semibold text-blue-600 underline"
+            >
+              View clinical reference source
+            </a>
           </section>
         </>
       ) : null}
@@ -1573,13 +1700,83 @@ const bloodSugarTesting = [
 
 const bloodTransfusion = [
   {
-    title: "Safety checks",
+    title: "Pre-transfusion checks",
     items: [
-      { label: "Positive patient ID", value: "Check wristband and details" },
-      { label: "Consent", value: "Confirm documented consent" },
-      { label: "Blood component", value: "Check against prescription" },
-      { label: "Baseline observations", value: "Before starting" },
-      { label: "Reaction symptoms", value: "Stop transfusion and escalate" },
+      {
+        label: "Patient ID",
+        value: `• Confirm positive patient identification
+• Check wristband and patient details`,
+      },
+      {
+        label: "Consent",
+        value: `• Confirm documented consent
+• Check patient understanding where appropriate`,
+      },
+      {
+        label: "Prescription",
+        value: `• Check blood component against prescription
+• Confirm route, rate and special requirements`,
+      },
+      {
+        label: "Bag inspection",
+        value: `• Visually inspect the bag before administration
+• Check for leaks, damage, clots or discolouration`,
+      },
+    ],
+  },
+  {
+    title: "Observations",
+    items: [
+      {
+        label: "Baseline",
+        value: "Record observations before starting transfusion",
+      },
+      {
+        label: "15 minutes",
+        value: "Repeat observations 15 minutes after starting each unit",
+      },
+      {
+        label: "End of unit",
+        value: "Record observations at the end of each unit",
+      },
+      {
+        label: "Monitoring",
+        value: "Continue visual monitoring throughout transfusion",
+      },
+    ],
+  },
+  {
+    title: "Compatibility",
+    items: [
+      {
+        label: "ABO/Rh",
+        value: "Check ABO/Rh compatibility before administration",
+      },
+      {
+        label: "Lab guidance",
+        value: "Use local policy and transfusion lab guidance",
+      },
+      {
+        label: "Memory warning",
+        value: "Do not rely on memory for compatibility decisions",
+      },
+    ],
+  },
+  {
+    title: "Reaction symptoms",
+    items: [
+      {
+        label: "If suspected",
+        value: "Stop transfusion and escalate immediately",
+      },
+      {
+        label: "Monitor",
+        value: "Check observations and patient condition",
+      },
+      {
+        label: "Policy",
+        value: "Follow local transfusion reaction policy",
+      },
     ],
   },
 ];
@@ -1603,11 +1800,43 @@ const anttGuide = [
   {
     title: "ANTT principles",
     items: [
-      { label: "Aseptic field", value: "Prepare clean working area" },
-      { label: "Hand hygiene", value: "Before and after procedure" },
-      { label: "Key parts", value: "Do not touch critical parts" },
-      { label: "Key sites", value: "Protect from contamination" },
-      { label: "PPE", value: "Use according to procedure risk" },
+      {
+        label: "Preparation",
+        value: `• Gather equipment
+• Check sterility and packaging
+• Clean trolley or working surface
+• Ensure adequate space`,
+      },
+      {
+        label: "PPE & Hand hygiene",
+        value: `• Perform hand hygiene before procedure
+• Maintain hand hygiene during key steps
+• Use PPE as required by policy`,
+      },
+      {
+        label: "Aseptic field",
+        value: `• Open packs carefully
+• Do not touch internal field
+• Maintain visibility and control
+• Avoid reaching over`,
+      },
+      {
+        label: "Key parts",
+        value: `• Do not touch syringe tips
+• Avoid contact with needle hubs
+• Protect all critical parts`,
+      },
+      {
+        label: "Key sites",
+        value: `• Protect wounds
+• Protect insertion sites
+• Maintain asepsis throughout`,
+      },
+      {
+        label: "Contamination",
+        value: `• Replace contaminated equipment
+• Re-establish aseptic field`,
+      },
     ],
   },
 ];
@@ -1616,12 +1845,68 @@ const catheterCare = [
   {
     title: "Care reminders",
     items: [
-      { label: "Closed system", value: "Maintain closed drainage" },
-      { label: "Bag position", value: "Below bladder level" },
-      { label: "Hygiene", value: "Routine meatal hygiene" },
-      { label: "Securement", value: "Prevent traction" },
-      { label: "Output", value: "Monitor and document urine output" },
-      { label: "Review need", value: "Remove as soon as no longer required" },
+      {
+        label: "Closed system",
+        value: "Maintain closed drainage system",
+      },
+      {
+        label: "Bag position",
+        value: "Keep drainage bag below bladder level",
+      },
+      {
+        label: "Securement",
+        value: "Secure catheter to prevent traction",
+      },
+      {
+        label: "Hygiene",
+        value: "Perform routine meatal hygiene",
+      },
+      {
+        label: "Output",
+        value: "Monitor and document urine output",
+      },
+      {
+        label: "Review need",
+        value: "Remove as soon as no longer required",
+      },
+    ],
+  },
+  {
+    title: "Drainage bags",
+    items: [
+      {
+        label: "Day use",
+        value: "Use leg bag during the day when mobile",
+      },
+      {
+        label: "Night use",
+        value: "Use night bag on a stand overnight",
+      },
+      {
+        label: "Floor safety",
+        value: "Avoid the bag touching the floor",
+      },
+      {
+        label: "Tubing",
+        value: "Check tubing is not kinked or pulling",
+      },
+    ],
+  },
+  {
+    title: "Documentation",
+    items: [
+      {
+        label: "Nursing notes",
+        value: "Document catheter care provided",
+      },
+      {
+        label: "Urine",
+        value: "Record urine output, appearance and concerns",
+      },
+      {
+        label: "Escalate",
+        value: "Pain, blockage, leakage, fever or signs of infection",
+      },
     ],
   },
 ];
@@ -1664,49 +1949,114 @@ const stomaCare = [
     ],
   },
 ];
+const referenceLinks: Record<string, string> = {
+  "iv-drip-rate-calculator": "/references#iv-fluids",
+  "liquid-dose-calculator": "/references#medications",
+  "medication-unit-converter": "/references#medications",
+  "tablet-capsule-calculator": "/references#medications",
+  "news2-score": "/references#news2",
 
+  "blood-sugar-testing": "/references#blood-sugar-testing",
+  "electrolyte-ranges": "/references#electrolytes",
+  "normal-vital-signs": "/references#normal-vital-signs",
+
+  "aseptic-non-touch-technique": "/references#antt",
+  "cannula-sizes-guide": "/references#cannula-sizes",
+  "catheter-care": "/references#catheter-care",
+  "catheterisation-male": "/references#catheterisation",
+  "catheterisation-female": "/references#catheterisation",
+  "oxygen-delivery-devices": "/references#oxygen",
+  "stoma-care": "/references#stoma-care",
+
+  "anaphylaxis-treatment": "/references#anaphylaxis",
+  "blood-transfusion": "/references#blood-transfusion",
+  cpr: "/references#cpr",
+  "sepsis-6-protocol": "/references#sepsis",
+};
 
 function ReferencePage({
   sections,
+  slug,
 }: {
   sections: {
     title: string;
     items: { label: string; value: string }[];
   }[];
+  slug: string;
 }) {
+
   return (
     <div className="nh-content space-y-4 pt-4">
+      <section className="nh-card nh-page-card !border-l-4 !border-l-red-500 !bg-red-50">
+  <p className="nh-section-label !text-red-700">⚠ Disclaimer</p>
+  <p className="mt-0 font-medium !text-red-900">
+    Reference only. Always follow local policy, clinical guidance, and
+    patient-specific requirements.
+  </p>
+</section>
+
       {sections.map((section) => (
         <section key={section.title} className="nh-card nh-page-card">
           <p className="nh-section-label">{section.title}</p>
-          <div className="mt-2 space-y-3">
-            {section.items.map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center justify-between rounded-[14px] bg-[#f7f9fc] px-4 py-3"
-              >
-                <span className="text-sm font-medium text-[var(--text-muted)]">
-                  {item.label}
-                </span>
-                <span className="font-semibold text-[var(--text-strong)]">
-                  {item.value}
-                </span>
-              </div>
-            ))}
+
+          <div className="mt-4 space-y-3">
+            {section.items?.map((item) => {
+              const value = item.value ?? "";
+              const isBulletList = value.includes("\n");
+              const isNote = item.label === "Note";
+
+              if (isNote) {
+                return (
+                  <div
+                    key={item.label}
+                    className="rounded-[14px] border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium leading-relaxed text-blue-900"
+                  >
+                    {value}
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={item.label}
+                  className="rounded-[14px] bg-[#f7f9fc] px-4 py-4"
+                >
+                  <p className="text-sm font-bold text-slate-500">
+                    {item.label}
+                  </p>
+
+                  <div className="mt-2 text-[15px] font-semibold leading-relaxed text-[var(--text-strong)]">
+                    {isBulletList ? (
+                      <ul className="list-disc space-y-1 pl-5">
+                        {value.split("\n").map((line, i) => (
+                          <li key={i}>{line.replace("• ", "")}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>{value}</p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       ))}
-
-      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
-        <p className="nh-section-label">Disclaimer</p>
-        <p className="mt-0">
-          Reference only. Always follow local policy, clinical guidance, and
-          patient-specific requirements.
-        </p>
-      </section>
+            {referenceLinks[slug] ? (
+        <section className="nh-card nh-page-card">
+          <p className="nh-section-label">Reference</p>
+          <a
+            href={referenceLinks[slug]}
+            className="text-sm font-semibold text-blue-600 underline"
+          >
+            View clinical reference source
+          </a>
+        </section>
+      ) : null}
     </div>
   );
 }
+
 
 function PlaceholderToolPage({
   description,
@@ -1767,52 +2117,52 @@ return (
   <PageShell activeNav="home">
   <Header title={content.title} subtitle={content.subtitle} />
 
-    {slug === "iv-drip-rate-calculator" ? (
-  <IvDripCalculator />
-) : slug === "liquid-dose-calculator" ? (
-  <LiquidDoseCalculator />
-) : slug === "medication-unit-converter" ? (
-  <MedicationUnitConverter />
-) : slug === "tablet-capsule-calculator" ? (
-  <TabletCapsuleCalculator />
-) : slug === "news2-score" ? (
-  <News2Calculator />
-) : slug === "normal-vital-signs" ? (
-  <ReferencePage sections={normalVitalSigns} />
-) : slug === "electrolyte-ranges" ? (
-  <ReferencePage sections={electrolyteRanges} />
-) : slug === "cannula-sizes-guide" ? (
-  <ReferencePage sections={cannulaGuide} />
-) : slug === "oxygen-delivery-devices" ? (
-  <ReferencePage sections={oxygenDevices} />
-) : slug === "sepsis-6-protocol" ? (
-  <ReferencePage sections={sepsis6Protocol} />
-) : slug === "anaphylaxis-treatment" ? (
-  <ReferencePage sections={anaphylaxisProtocol} />
-) : slug === "blood-sugar-testing" ? (
-  <ReferencePage sections={bloodSugarTesting} />
-) : slug === "blood-transfusion" ? (
-  <ReferencePage sections={bloodTransfusion} />
-) : slug === "cpr" ? (
-  <ReferencePage sections={cprGuide} />
-) : slug === "aseptic-non-touch-technique" ? (
-  <ReferencePage sections={anttGuide} />
-) : slug === "catheter-care" ? (
-  <ReferencePage sections={catheterCare} />
-) : slug === "catheterisation-male" ? (
-  <ReferencePage sections={maleCatheterisation} />
-) : slug === "catheterisation-female" ? (
-  <ReferencePage sections={femaleCatheterisation} />
-) : slug === "stoma-care" ? (
-  <ReferencePage sections={stomaCare} />
-) : 
-(
-  <PlaceholderToolPage
-    description={content.description}
-    notes={content.notes}
-  />
-)}
+  {slug === "iv-drip-rate-calculator" ? (
+    <IvDripCalculator />
+  ) : slug === "liquid-dose-calculator" ? (
+    <LiquidDoseCalculator />
+  ) : slug === "medication-unit-converter" ? (
+    <MedicationUnitConverter />
+  ) : slug === "tablet-capsule-calculator" ? (
+    <TabletCapsuleCalculator />
+  ) : slug === "news2-score" ? (
+    <News2Calculator />
+  ) : slug === "normal-vital-signs" ? (
+    <ReferencePage sections={normalVitalSigns} slug={slug} />
+  ) : slug === "electrolyte-ranges" ? (
+    <ReferencePage sections={electrolyteRanges} slug={slug} />
+  ) : slug === "cannula-sizes-guide" ? (
+    <ReferencePage sections={cannulaGuide} slug={slug} />
+  ) : slug === "oxygen-delivery-devices" ? (
+    <ReferencePage sections={oxygenDevices} slug={slug} />
+  ) : slug === "sepsis-6-protocol" ? (
+    <ReferencePage sections={sepsis6Protocol} slug={slug} />
+  ) : slug === "anaphylaxis-treatment" ? (
+    <ReferencePage sections={anaphylaxisProtocol} slug={slug} />
+  ) : slug === "blood-sugar-testing" ? (
+    <ReferencePage sections={bloodSugarTesting} slug={slug} />
+  ) : slug === "blood-transfusion" ? (
+    <ReferencePage sections={bloodTransfusion} slug={slug} />
+  ) : slug === "cpr" ? (
+    <ReferencePage sections={cprGuide} slug={slug} />
+  ) : slug === "aseptic-non-touch-technique" ? (
+    <ReferencePage sections={anttGuide} slug={slug} />
+  ) : slug === "catheter-care" ? (
+    <ReferencePage sections={catheterCare} slug={slug} />
+  ) : slug === "catheterisation-male" ? (
+    <ReferencePage sections={maleCatheterisation} slug={slug} />
+  ) : slug === "catheterisation-female" ? (
+    <ReferencePage sections={femaleCatheterisation} slug={slug} />
+  ) : slug === "stoma-care" ? (
+    <ReferencePage sections={stomaCare} slug={slug} />
+  ) : (
+    <PlaceholderToolPage
+      description={content.description}
+      notes={content.notes}
+    />
+  )}
 </PageShell>
+
 );
   
 }
