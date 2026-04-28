@@ -227,3 +227,21 @@ input::placeholder {
   border-radius: 999px;
   background: var(--blue-500);
 }
+/* === Disclaimer / Warning Card Variant === */
+
+.nh-card-danger {
+  background: #fff1f2;
+  border-left: 4px solid #ef4444;
+}
+
+.nh-card-danger .nh-section-label {
+  color: #b91c1c;
+}
+
+.nh-card-danger p {
+  color: #991b1b;
+}
+
+.nh-card-danger label {
+  color: #20365b;
+}

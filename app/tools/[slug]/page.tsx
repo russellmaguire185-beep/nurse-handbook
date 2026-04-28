@@ -373,8 +373,8 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
         <p className="nh-section-label">Calculator</p>
         <h2>Enter infusion details</h2>
         <p>
-          Fill in the total volume, infusion time, and drop factor, then
-          calculate an estimated rate.
+          Fill in the total volume, infusion time, and drop factor to cross-check
+an estimated infusion rate.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -453,12 +453,12 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
         </div>
       </section>
 
-      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
+      <section className="nh-card nh-page-card nh-card-danger">
   <p className="nh-section-label">Disclaimer</p>
-  <p className="mt-0">
-    Clinical support only. Always verify the prescription, pump settings,
-    local policy, and perform an independent clinical calculation before
-    administration.
+  <p className="mt-0 text-red-700">
+    Reference and cross-check only. Infusion rates must be independently
+verified against the prescription, pump settings, patient factors, and
+local policy before administration. Do not rely on this tool as a sole source.
   </p>
 
   <label className="mt-4 flex items-start gap-3 rounded-[14px] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[var(--text-strong)]">
@@ -468,7 +468,7 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
       onChange={(event) => setAcceptedDisclaimer(event.target.checked)}
       className="mt-1 h-4 w-4"
     />
-    <span>I understand and accept this clinical safety disclaimer.</span>
+    <span>I understand this is a reference and cross-check tool only.</span>
   </label>
 </section>
 
@@ -484,7 +484,7 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
                 : "cursor-not-allowed bg-[#d8e1ec] text-[#70839f]"
             }`}
 >
-  Calculate rate
+            Cross-check rate
 </button>
 
           <button
@@ -507,7 +507,7 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
         <>
           <section className="nh-card nh-page-card">
             <p className="nh-section-label">Calculated estimate</p>
-            <h2>Results</h2>
+            <h2>Estimated results</h2>
             <div className="mt-4 grid gap-3">
               <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
                 <p className="text-sm font-semibold text-[var(--text-muted)]">
@@ -542,7 +542,7 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
           </section>
 
           <section className="nh-card nh-page-card">
-            <p className="nh-section-label">How this is calculated</p>
+              <p className="nh-section-label">How this estimate is calculated</p>
             <h2>Calculation method</h2>
 
             <div className="mt-4 space-y-4 text-[15px] text-[var(--text-muted)]">
@@ -583,19 +583,15 @@ const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
         </>
       ) : null}
       {result ? (
-  <>
-    ...existing result sections...
-    
-    <section className="nh-card nh-page-card">
-      <p className="nh-section-label">Reference</p>
-      <a
-        href={referenceLinks["iv-drip-rate-calculator"]}
-        className="text-sm font-semibold text-blue-600 underline"
-      >
-        View clinical reference source
-      </a>
-    </section>
-  </>
+  <section className="nh-card nh-page-card">
+    <p className="nh-section-label">Reference</p>
+    <a
+      href={referenceLinks["iv-drip-rate-calculator"]}
+      className="text-sm font-semibold text-blue-600 underline"
+    >
+      View reference source
+    </a>
+  </section>
 ) : null}
     </div>
   );
@@ -664,7 +660,7 @@ function LiquidDoseCalculator() {
         <h2>Enter medication details</h2>
         <p>
           Enter the required dose, available stock strength, and stock volume to
-          calculate the volume to administer.
+cross-check an estimated volume.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -756,12 +752,12 @@ function LiquidDoseCalculator() {
         </div>
       </section>
 
-      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
+      <section className="nh-card nh-page-card nh-card-danger">
         <p className="nh-section-label">Disclaimer</p>
-        <p className="mt-0">
-          Clinical support only. Always verify the prescription, formulation,
-          concentration, route, local policy, and perform an independent
-          medication calculation before administration.
+        <p className="mt-0 text-red-700">
+         Reference and cross-check only. Medication calculations must be independently
+verified against the prescription, formulation, concentration, route, patient
+factors, and local policy before administration. Do not rely on this tool as a sole source.
         </p>
 
         <label className="mt-4 flex items-start gap-3 rounded-[14px] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[var(--text-strong)]">
@@ -771,7 +767,7 @@ function LiquidDoseCalculator() {
             onChange={(event) => setAcceptedDisclaimer(event.target.checked)}
             className="mt-1 h-4 w-4"
           />
-          <span>I understand and accept this clinical safety disclaimer.</span>
+          <span>I understand this is a reference and cross-check tool only.</span>
         </label>
       </section>
 
@@ -787,7 +783,7 @@ function LiquidDoseCalculator() {
                 : "cursor-not-allowed bg-[#d8e1ec] text-[#70839f]"
             }`}
           >
-            Calculate liquid dose
+            Cross-check liquid dose
           </button>
 
           <button
@@ -810,7 +806,7 @@ function LiquidDoseCalculator() {
         <>
           <section className="nh-card nh-page-card">
             <p className="nh-section-label">Calculated estimate</p>
-            <h2>Results</h2>
+            <h2>Estimated results</h2>
             <div className="mt-4 grid gap-3">
               <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
                 <p className="text-sm font-semibold text-[var(--text-muted)]">
@@ -829,7 +825,7 @@ function LiquidDoseCalculator() {
           </section>
 
           <section className="nh-card nh-page-card">
-            <p className="nh-section-label">How this is calculated</p>
+          <p className="nh-section-label">How this estimate is calculated</p>
             <h2>Calculation method</h2>
 
             <div className="mt-4 space-y-4 text-[15px] text-[var(--text-muted)]">
@@ -985,8 +981,8 @@ function News2Calculator() {
         <p className="nh-section-label">Calculator</p>
         <h2>Enter physiological observations</h2>
         <p>
-          Enter the patient observations to calculate a NEWS2 score using the
-          standard Scale 1 structure.
+          Enter the patient observations to cross-check an estimated NEWS2 score using the
+standard Scale 1 structure.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -1130,12 +1126,12 @@ function News2Calculator() {
         </div>
       </section>
 
-      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
+      <section className="nh-card nh-page-card nh-card-danger">
         <p className="nh-section-label">Disclaimer</p>
-        <p className="mt-0">
-          Clinical support only. Always interpret NEWS2 in clinical context,
-          follow local escalation policy, and do not use this tool as a
-          substitute for assessment or urgent review.
+        <p className="mt-0 text-red-700">
+          Reference and cross-check only. NEWS2 must be interpreted in clinical
+context alongside local escalation policy, clinical assessment, and
+senior review where required. Do not rely on this tool as a sole source.
         </p>
 
         <label className="mt-4 flex items-start gap-3 rounded-[14px] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[var(--text-strong)]">
@@ -1145,7 +1141,7 @@ function News2Calculator() {
             onChange={(event) => setAcceptedDisclaimer(event.target.checked)}
             className="mt-1 h-4 w-4"
           />
-          <span>I understand and accept this clinical safety disclaimer.</span>
+          <span>I understand this is a reference and cross-check tool only.</span>
         </label>
       </section>
 
@@ -1161,7 +1157,7 @@ function News2Calculator() {
                 : "cursor-not-allowed bg-[#d8e1ec] text-[#70839f]"
             }`}
           >
-            Calculate NEWS2
+          Cross-check NEWS2
           </button>
 
           <button
@@ -1184,7 +1180,7 @@ function News2Calculator() {
         <>
           <section className="nh-card nh-page-card">
             <p className="nh-section-label">Calculated estimate</p>
-            <h2>NEWS2 result</h2>
+            <h2>Estimated NEWS2 result</h2>
 
             <div className="mt-4 grid gap-3">
               <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
@@ -1276,7 +1272,7 @@ function News2Calculator() {
           </section>
 
           <section className="nh-card nh-page-card">
-            <p className="nh-section-label">How this is calculated</p>
+              <p className="nh-section-label">How this estimate is calculated</p>
             <h2>Calculation method</h2>
 
             <div className="mt-4 space-y-4 text-[15px] text-[var(--text-muted)]">
@@ -1320,7 +1316,7 @@ function News2Calculator() {
               href={referenceLinks["news2-score"]}
               className="text-sm font-semibold text-blue-600 underline"
             >
-              View clinical reference source
+              View reference source
             </a>
           </section>
         </>
@@ -1373,10 +1369,9 @@ function MedicationUnitConverter() {
   return (
     <div className="nh-content space-y-4 pt-4">
       <section className="nh-card nh-page-card">
-        <p className="nh-section-label">Converter</p>
-        <h2>Convert medication units</h2>
-        <p>Convert between grams, milligrams, and micrograms.</p>
-
+        <p className="nh-section-label">Cross-check tool</p>
+        <h2>Cross-check medication units</h2>
+<p>Cross-check estimated equivalent values between grams, milligrams, and micrograms.</p>
         <div className="mt-5 space-y-4">
           <div>
             <label className="mb-2 block text-sm font-semibold text-[var(--text-strong)]">
@@ -1413,11 +1408,12 @@ function MedicationUnitConverter() {
         </div>
       </section>
 
-      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
+      <section className="nh-card nh-page-card nh-card-danger">
         <p className="nh-section-label">Disclaimer</p>
-        <p className="mt-0">
-          Clinical support only. Always verify prescription units, formulation,
-          local policy, and perform an independent calculation.
+        <p className="mt-0 text-red-700">
+          Reference and cross-check only. Medication units must be independently
+verified against the prescription, formulation, patient factors, and local
+policy. Do not rely on this tool as a sole source.
         </p>
 
         <label className="mt-4 flex items-start gap-3 rounded-[14px] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[var(--text-strong)]">
@@ -1427,7 +1423,7 @@ function MedicationUnitConverter() {
             onChange={(event) => setAcceptedDisclaimer(event.target.checked)}
             className="mt-1 h-4 w-4"
           />
-          <span>I understand and accept this clinical safety disclaimer.</span>
+          <span>I understand this is a reference and cross-check tool only.</span>
         </label>
       </section>
 
@@ -1443,7 +1439,7 @@ function MedicationUnitConverter() {
                 : "cursor-not-allowed bg-[#d8e1ec] text-[#70839f]"
             }`}
           >
-            Convert units
+          Cross-check units
           </button>
 
           <button
@@ -1465,8 +1461,8 @@ function MedicationUnitConverter() {
       {result ? (
         <>
           <section className="nh-card nh-page-card">
-            <p className="nh-section-label">Converted values</p>
-            <h2>Results</h2>
+<p className="nh-section-label">Estimated equivalent values</p>
+            <h2>Estimated results</h2>
 
             <div className="mt-4 grid gap-3">
               <div className="rounded-[16px] bg-[#f7f9fc] px-4 py-4">
@@ -1504,7 +1500,7 @@ function MedicationUnitConverter() {
               href={referenceLinks["medication-unit-converter"]}
               className="text-sm font-semibold text-blue-600 underline"
             >
-              View clinical reference source
+View reference source
             </a>
           </section>
         </>
@@ -1553,8 +1549,8 @@ function MedicationUnitConverter() {
         <p className="nh-section-label">Calculator</p>
         <h2>Tablet & capsule dose</h2>
         <p>
-          Calculate how many tablets or capsules are needed for a prescribed
-          dose.
+          Cross-check the estimated number of tablets or capsules for a prescribed
+        dose.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -1592,12 +1588,13 @@ function MedicationUnitConverter() {
         </div>
       </section>
 
-      <section className="nh-card nh-page-card border-l-4 border-l-amber-400">
+      <section className="nh-card nh-page-card nh-card-danger">
         <p className="nh-section-label">Disclaimer</p>
-        <p className="mt-0">
-          Clinical support only. Always verify prescription, formulation,
-          available strength, local policy, and whether splitting is appropriate.
-        </p>
+        <p className="mt-0 text-red-700">
+           Reference and cross-check only. Tablet and capsule calculations must be
+          independently verified against the prescription, formulation, available
+          strength, patient factors, local policy, and whether splitting is appropriate.
+          Do not rely on this tool as a sole source.       </p>
 
         <label className="mt-4 flex items-start gap-3 rounded-[14px] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[var(--text-strong)]">
           <input
@@ -1606,7 +1603,7 @@ function MedicationUnitConverter() {
             onChange={(event) => setAcceptedDisclaimer(event.target.checked)}
             className="mt-1 h-4 w-4"
           />
-          <span>I understand and accept this clinical safety disclaimer.</span>
+          <span>I understand this is a reference and cross-check tool only.</span>
         </label>
       </section>
 
@@ -1622,7 +1619,7 @@ function MedicationUnitConverter() {
                 : "cursor-not-allowed bg-[#d8e1ec] text-[#70839f]"
             }`}
           >
-            Calculate tablets/capsules
+            Cross-check tablets/capsules
           </button>
 
           <button
@@ -1645,7 +1642,7 @@ function MedicationUnitConverter() {
         <>
           <section className="nh-card nh-page-card">
             <p className="nh-section-label">Calculated estimate</p>
-            <h2>Results</h2>
+            <h2>Estimated results</h2>
 
             <div className="mt-4 rounded-[16px] bg-[#f7f9fc] px-4 py-4">
               <p className="text-sm font-semibold text-[var(--text-muted)]">
@@ -1658,7 +1655,7 @@ function MedicationUnitConverter() {
           </section>
 
           <section className="nh-card nh-page-card">
-            <p className="nh-section-label">How this is calculated</p>
+            <p className="nh-section-label">How this estimate is calculated</p>
             <h2>Calculation method</h2>
 
             <p className="mt-2">
@@ -1678,8 +1675,7 @@ function MedicationUnitConverter() {
               href={referenceLinks["tablet-capsule-calculator"]}
               className="text-sm font-semibold text-blue-600 underline"
             >
-              View clinical reference source
-            </a>
+              View reference source            </a>
           </section>
         </>
       ) : null}
@@ -1987,11 +1983,12 @@ function ReferencePage({
 
   return (
     <div className="nh-content space-y-4 pt-4">
-      <section className="nh-card nh-page-card !border-l-4 !border-l-red-500 !bg-red-50">
-  <p className="nh-section-label !text-red-700">⚠ Disclaimer</p>
-  <p className="mt-0 font-medium !text-red-900">
-    Reference only. Always follow local policy, clinical guidance, and
-    patient-specific requirements.
+      <section className="nh-card nh-page-card nh-card-danger">
+  <p className="nh-section-label">⚠ Disclaimer</p>
+  <p className="mt-0 font-medium">
+    Reference and cross-check only. Always follow local policy, clinical
+    guidance, and patient-specific requirements. Do not rely on this as a sole
+    source.
   </p>
 </section>
 

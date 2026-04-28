@@ -9,7 +9,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
       className="nh-header px-5 pb-8 pt-10"
       style={{
         background:
-          "linear-gradient(180deg, #8ec4ff 0%, #63adff 55%, #4b9af7 100%)",
+  "linear-gradient(180deg, #4e3ae3 0%, #8f53aa 100%)", 
       }}
     >
       <div className="mx-auto max-w-[360px] text-center">

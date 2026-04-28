@@ -43,8 +43,8 @@ export default function HomePage() {
   return (
     <PageShell activeNav="home">
       <Header
-        title="The Nurses’ Handbook"
-        subtitle="Quick tools for real shifts"
+        title="The Nurse’s Handbook"
+        subtitle="Quick reference & cross-check tools for clinical shifts"
       />
        <CategoryPills
         categories={categories}
