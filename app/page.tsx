@@ -33,12 +33,12 @@ export default function HomePage() {
   }
 
   const filteredTools = useMemo(() => {
-  return tools
-    .filter((tool) => {
-      return activeCategory === "All" || tool.category === activeCategory;
-    })
-    .sort((a, b) => a.title.localeCompare(b.title));
-}, [activeCategory]);
+    return tools
+      .filter((tool) => {
+        return activeCategory === "All" || tool.category === activeCategory;
+      })
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [activeCategory]);
 
   return (
     <PageShell activeNav="home">
@@ -46,7 +46,8 @@ export default function HomePage() {
         title="The Nurse’s Handbook"
         subtitle="Quick reference & cross-check tools for clinical shifts"
       />
-       <CategoryPills
+
+      <CategoryPills
         categories={categories}
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
@@ -74,6 +75,27 @@ export default function HomePage() {
               <p>Try another search or category.</p>
             </div>
           )}
+        </section>
+
+        <section className="nh-card nh-page-card mt-4">
+          <p className="nh-section-label">Learn</p>
+          <h2>Guides and explanations</h2>
+
+          <div className="mt-3 space-y-2 text-sm">
+            <a
+              href="/iv-drip-rate-formula"
+              className="block font-semibold text-blue-600 underline"
+            >
+              IV Drip Rate Formula (mL/hr & drops/min explained)
+            </a>
+
+            <a
+              href="/news2-score-explained"
+              className="block font-semibold text-blue-600 underline"
+            >
+              NEWS2 Score Explained (how scoring works)
+            </a>
+          </div>
         </section>
       </div>
     </PageShell>
