@@ -26,7 +26,7 @@ const toolContent: Record<
       "Clear results for mL/hr and drops/min",
     ],
   },
-  "dosage-calculator": {
+  "liquid-dose-calculator": {
     title: "Liquid Dose Calculator",
       subtitle: "Medication dose reference calculator (mg to mL conversion)",
       description:
@@ -856,6 +856,15 @@ factors, and local policy before administration. Do not rely on this tool as a s
                 </p>
               </div>
             </div>
+          </section>
+          <section className="nh-card nh-page-card">
+            <p className="nh-section-label">Reference</p>
+            <a
+              href={referenceLinks["liquid-dose-calculator"]}
+              className="text-sm font-semibold text-blue-600 underline"
+            >
+              View reference source
+            </a>
           </section>
           
         </>
