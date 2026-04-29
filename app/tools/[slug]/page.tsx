@@ -17,9 +17,9 @@ const toolContent: Record<
 > = {
   "iv-drip-rate-calculator": {
     title: "IV Drip Rate Calculator",
-    subtitle: "Quick calculation workspace",
+    subtitle: "IV drip rate reference calculator (mL/hr and drops per minute)",
     description:
-      "Use this tool to calculate an estimated infusion rate in mL/hr and drops/min based on total volume, infusion time, and drop factor.",
+"Use this tool to cross-check an estimated infusion rate in mL/hr and drops/min based on total volume, infusion time, and drop factor.",
     notes: [
       "Button-based calculation flow",
       "Visible disclaimer before calculation",
@@ -27,15 +27,15 @@ const toolContent: Record<
     ],
   },
   "dosage-calculator": {
-    title: "Dosage Calculator",
-    subtitle: "Medication support tool",
-    description:
-      "Use this tool to calculate the volume to administer from the required dose, stock strength, and stock volume.",
-    notes: [
-      "Button-based calculation flow",
-      "Visible disclaimer before calculation",
-      "Clear worked method for dose volume",
-    ],
+    title: "Liquid Dose Calculator",
+      subtitle: "Medication dose reference calculator (mg to mL conversion)",
+      description:
+        "Use this tool to cross-check an estimated volume based on a required dose, stock strength, and stock volume.",
+          notes: [
+            "Button-based calculation flow",
+            "Visible disclaimer before calculation",
+            "Clear worked method for dose volume",
+          ],
   },
   "normal-vital-signs": {
     title: "Normal Vital Signs",
@@ -61,7 +61,7 @@ const toolContent: Record<
   },
   "sepsis-6-protocol": {
     title: "Sepsis 6 Protocol",
-    subtitle: "Immediate action steps",
+    subtitle: "Sepsis 6 reference overview",
     description:
       "This page is being held as a structured placeholder until the protocol content is locked to current guidance and local policy.",
     notes: [
@@ -72,7 +72,7 @@ const toolContent: Record<
   },
   "anaphylaxis-treatment": {
     title: "Anaphylaxis Treatment",
-    subtitle: "Emergency response guide",
+    subtitle: "Anaphylaxis emergency reference overview",
     description:
       "This page is being held as a structured placeholder until the protocol content is locked to current guidance and local policy.",
     notes: [
@@ -83,9 +83,10 @@ const toolContent: Record<
   },
   "news2-score": {
     title: "NEWS2 Score",
-    subtitle: "Early warning system",
-    description:
-      "Use this tool to calculate a NEWS2 score using the standard physiological inputs and oxygen requirement.",
+    subtitle: "NEWS2 score reference calculator for clinical observations",
+      description:
+        "Use this tool to cross-check an estimated NEWS2 score using standard physiological inputs and oxygen requirement.",
+
     notes: [
       "Button-based calculation flow",
       "Visible disclaimer before calculation",
@@ -116,7 +117,7 @@ const toolContent: Record<
   },
   "cpr": {
   title: "CPR",
-  subtitle: "Basic life support",
+  subtitle: "Basic life support reference guide",
   description: "Adult basic life support reminder.",
   notes: [
     "Quick reference only",
