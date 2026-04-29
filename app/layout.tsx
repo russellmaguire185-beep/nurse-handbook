@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 
-const gaId = "G-CEE12YM05P";
-
 export const metadata: Metadata = {
   metadataBase: new URL("https://thenurseshandbook.com"),
   title: {
@@ -27,26 +25,28 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en-GB">
-      <body>
+      <head>
+        {/* Google Analytics — FORCE LOAD */}
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-CEE12YM05P"
+          strategy="beforeInteractive"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
-            function gtag(){window.dataLayer.push(arguments);}
+            function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${gaId}');
+            gtag('config', 'G-CEE12YM05P');
           `}
         </Script>
-        {children}
-      </body>
+      </head>
+
+      <body>{children}</body>
     </html>
   );
 }
